@@ -4,13 +4,14 @@ from application.routes.commentaries_routes import commentaries_bp
 from application.routes.delivery_routes import delivery_bp
 from application.routes.offer_routes import offer_bp
 from application.routes.status_routes import status_bp
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 
-# Create tables
 Base.metadata.create_all(bind=engine)
 
-# Register blueprints
 app.register_blueprint(commentaries_bp)
 app.register_blueprint(delivery_bp)
 app.register_blueprint(offer_bp)

@@ -8,14 +8,11 @@ class Offer(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     uuid = Column(String(36), default=lambda: str(uuid4()), unique=True, index=True)
-    clothId = Column(Integer, ForeignKey('cloth.id'))
+    clothId = Column(Integer)
     offer = Column(Float)
-    buyerId = Column(Integer, ForeignKey('user.id'))
-    sellerId = Column(Integer, ForeignKey('user.id'))
+    buyerId = Column(Integer)
+    sellerId = Column(Integer)
     statusId = Column(Integer, ForeignKey('status.id'))
-
-    cloth = relationship("Cloth", back_populates="offer")
-    buyer = relationship("User", foreign_keys=[buyerId])
-    seller = relationship("User", foreign_keys=[sellerId])
+    
     status = relationship("Status", back_populates="offer")
     delivery = relationship("Delivery", back_populates="offer")

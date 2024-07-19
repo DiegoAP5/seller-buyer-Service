@@ -56,5 +56,4 @@ class StatusController:
             "id": status.id,
             "uuid": status.uuid,
             "name": status.name,
-            "description": status.description
         }

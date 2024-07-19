@@ -2,3 +2,5 @@ Flask
 SQLAlchemy
 marshmallow
 PyMySQL
+python-dotenv
+flask-cors

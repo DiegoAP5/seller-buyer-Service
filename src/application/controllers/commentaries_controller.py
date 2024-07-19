@@ -22,7 +22,7 @@ class CommentariesController:
             return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
 
     def update_commentaries(self, uuid, data):
-        commentaries = self.repo.get_by_uuid(Commentaries, uuid)
+        commentaries = self.repo.get_by_uuid(uuid)
         if commentaries:
             try:
                 validated_data = self.schema.load(data, partial=True)
@@ -35,28 +35,26 @@ class CommentariesController:
         return BaseResponse(None, "Commentaries not found", False, HTTPStatus.NOT_FOUND)
 
     def get_commentaries(self, uuid):
-        commentaries = self.repo.get_by_uuid(Commentaries, uuid)
+        commentaries = self.repo.get_by_uuid(uuid)
         if commentaries:
             return BaseResponse(self.to_dict(commentaries), "Commentaries fetched successfully", True, HTTPStatus.OK)
         return BaseResponse(None, "Commentaries not found", False, HTTPStatus.NOT_FOUND)
 
     def delete_commentaries(self, uuid):
-        commentaries = self.repo.get_by_uuid(Commentaries, uuid)
+        commentaries = self.repo.get_by_uuid(uuid)
         if commentaries:
             self.repo.delete(commentaries)
             return BaseResponse(None, "Commentaries deleted successfully", True, HTTPStatus.NO_CONTENT)
         return BaseResponse(None, "Commentaries not found", False, HTTPStatus.NOT_FOUND)
 
     def list_commentaries(self):
-        commentaries_list = self.repo.get_all(Commentaries)
+        commentaries_list = self.repo.get_all()
         return BaseResponse([self.to_dict(commentaries) for commentaries in commentaries_list], "Commentaries fetched successfully", True, HTTPStatus.OK)
 
     def to_dict(self, commentaries: Commentaries):
         return {
             "id": commentaries.id,
             "uuid": commentaries.uuid,
-            "clothId": commentaries.clothId,
-            "offer": commentaries.offer,
-            "buyerId": commentaries.buyerId,
+            "comments": commentaries.comments,
             "sellerId": commentaries.sellerId
         }

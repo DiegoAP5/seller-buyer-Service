@@ -6,7 +6,6 @@ class DeliverySchema(Schema):
     date = fields.Date(required=True)
     clothId = fields.Int(required=True)
     location = fields.Str(required=True)
-    buyer = fields.Str(required=True)
     cellphone = fields.Str(required=True)
     comments = fields.Str(required=True)
     statusId = fields.Int(required=True)
