@@ -4,3 +4,4 @@ marshmallow
 PyMySQL
 python-dotenv
 flask-cors
+scikit-learn

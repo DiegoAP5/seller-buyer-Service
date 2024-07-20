@@ -4,6 +4,7 @@ from infraestructure.repositories.commentaries_repository import CommentariesRep
 from infraestructure.db import SessionLocal
 from application.schemas.commentaries_schema import CommentariesSchema
 from application.schemas.base_response import BaseResponse
+from application.services.commentaries_filter import CommentariesFilterService
 from http import HTTPStatus
 
 class CommentariesController:
@@ -11,13 +12,15 @@ class CommentariesController:
         self.session = SessionLocal()
         self.repo = CommentariesRepository(self.session)
         self.schema = CommentariesSchema()
+        self.filter_service = CommentariesFilterService()
 
     def create_commentaries(self, data):
         try:
             validated_data = self.schema.load(data)
+            validated_data['comments'] = self.filter_service.censor_commentary(validated_data['comments'])
             new_commentaries = Commentaries(**validated_data)
             self.repo.add(new_commentaries)
-            return BaseResponse(self.to_dict(new_commentaries), "Commentaries created successfully", True, HTTPStatus.CREATED)
+            return BaseResponse(self.to_dict(new_commentaries), "Commentary created successfully", True, HTTPStatus.CREATED)
         except ValidationError as err:
             return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
 
@@ -26,13 +29,14 @@ class CommentariesController:
         if commentaries:
             try:
                 validated_data = self.schema.load(data, partial=True)
+                validated_data['comments'] = self.filter_service.censor_commentary(validated_data['comments'])
                 for key, value in validated_data.items():
                     setattr(commentaries, key, value)
                 self.repo.update(commentaries)
-                return BaseResponse(self.to_dict(commentaries), "Commentaries updated successfully", True, HTTPStatus.OK)
+                return BaseResponse(self.to_dict(commentaries), "Commentary updated successfully", True, HTTPStatus.OK)
             except ValidationError as err:
                 return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
-        return BaseResponse(None, "Commentaries not found", False, HTTPStatus.NOT_FOUND)
+        return BaseResponse(None, "Commentary not found", False, HTTPStatus.NOT_FOUND)
 
     def get_commentaries(self, uuid):
         commentaries = self.repo.get_by_uuid(uuid)
