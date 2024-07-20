@@ -43,6 +43,12 @@ class CommentariesController:
         if commentaries:
             return BaseResponse(self.to_dict(commentaries), "Commentaries fetched successfully", True, HTTPStatus.OK)
         return BaseResponse(None, "Commentaries not found", False, HTTPStatus.NOT_FOUND)
+    
+    def get_commentaries_by_seller(self, seller_id):
+        commentaries = self.repo.get_all_by_seller_id(seller_id)
+        if commentaries:
+            return BaseResponse(self.to_dict(commentaries), "Commentaries fetched successfully", True, HTTPStatus.OK)
+        return BaseResponse(None, "Commentaries not found", False, HTTPStatus.NOT_FOUND)
 
     def delete_commentaries(self, uuid):
         commentaries = self.repo.get_by_uuid(uuid)

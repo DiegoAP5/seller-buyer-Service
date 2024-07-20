@@ -15,6 +15,18 @@ class DeliveryRepository:
     def get_all(self):
         return self.session.query(Delivery).all()
     
+    def get_all_delivery_by_seller(self, seller_id):
+        return self.session.query(Delivery).filter(Delivery.sellerId == seller_id).all()
+    
+    def get_all_delivery_by_seller_and_status(self, seller_id, status_id):
+        return self.session.query(Delivery).filter(Delivery.sellerId == seller_id, Delivery.statusId == status_id).all()
+    
+    def get_all_delivery_by_buyer(self, buyer_id):
+        return self.session.query(Delivery).filter(Delivery.buyerId == buyer_id).all()
+    
+    def get_all_delivery_by_buyer_and_status(self, buyer_id,status_id):
+        return self.session.query(Delivery).filter(Delivery.buyerId == buyer_id, Delivery.statusId == status_id).all()
+    
     def update(self, status: Delivery):
         self.session.commit()
     

@@ -50,6 +50,22 @@ class DeliveryController:
     def list_deliveries(self):
         deliveries = self.repo.get_all()
         return BaseResponse([self.to_dict(delivery) for delivery in deliveries], "Deliveries fetched successfully", True, HTTPStatus.OK)
+    
+    def list_deliveries_seller(self, seller_id):
+        deliveries = self.repo.get_all_delivery_by_seller(seller_id)
+        return BaseResponse([self.to_dict(delivery) for delivery in deliveries], "Deliveries fetched successfully", True, HTTPStatus.OK)
+    
+    def list_deliveries_seller_status(self, seller_id, status_id):
+        deliveries = self.repo.get_all_delivery_by_seller_and_status(seller_id,status_id)
+        return BaseResponse([self.to_dict(delivery) for delivery in deliveries], "Deliveries fetched successfully", True, HTTPStatus.OK)
+    
+    def list_deliveries_buyer(self, buyer_id):
+        deliveries = self.repo.get_all_delivery_by_buyer(buyer_id)
+        return BaseResponse([self.to_dict(delivery) for delivery in deliveries], "Deliveries fetched successfully", True, HTTPStatus.OK)
+    
+    def list_deliveries_buyer_status(self, buyer_id, status_id):
+        deliveries = self.repo.get_all_delivery_by_buyer_and_status(buyer_id,status_id)
+        return BaseResponse([self.to_dict(delivery) for delivery in deliveries], "Deliveries fetched successfully", True, HTTPStatus.OK)
 
     def to_dict(self, delivery: Delivery):
         return {

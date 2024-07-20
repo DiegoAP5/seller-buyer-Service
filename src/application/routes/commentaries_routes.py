@@ -21,6 +21,11 @@ def get_commentaries(uuid):
     response = controller.get_commentaries(uuid)
     return response.to_response()
 
+@commentaries_bp.route('/commentaries/seller/<seller_id>', methods=['GET'])
+def get_commentaries(seller_id):
+    response = controller.get_commentaries_by_seller(seller_id)
+    return response.to_response()
+
 @commentaries_bp.route('/commentaries/delete/<uuid>', methods=['DELETE'])
 def delete_commentaries(uuid):
     response = controller.delete_commentaries(uuid)

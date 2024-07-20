@@ -15,6 +15,9 @@ class CommentariesRepository:
     def get_all(self):
         return self.session.query(Commentaries).all()
     
+    def get_all_by_seller_id(self, seller_id):
+        return self.session.query(Commentaries).filter(Commentaries.sellerId == seller_id).all()
+    
     def update(self, status: Commentaries):
         self.session.commit()
     
