@@ -38,7 +38,7 @@ class CommentariesController:
                 return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
         return BaseResponse(None, "Commentary not found", False, HTTPStatus.NOT_FOUND)
 
-    def get_commentaries(self, uuid):
+    def getl_commentaries(self, uuid):
         commentaries = self.repo.get_by_uuid(uuid)
         if commentaries:
             return BaseResponse(self.to_dict(commentaries), "Commentaries fetched successfully", True, HTTPStatus.OK)

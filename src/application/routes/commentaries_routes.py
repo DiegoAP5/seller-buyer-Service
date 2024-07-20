@@ -18,7 +18,7 @@ def update_commentaries(uuid):
 
 @commentaries_bp.route('/commentaries/<uuid>', methods=['GET'])
 def get_commentaries(uuid):
-    response = controller.get_commentaries(uuid)
+    response = controller.getl_commentaries(uuid)
     return response.to_response()
 
 @commentaries_bp.route('/commentaries/seller/<seller_id>', methods=['GET'])
