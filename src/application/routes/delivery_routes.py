@@ -32,24 +32,24 @@ def list_deliveries():
     return response.to_response()
 
 @delivery_bp.route('/delivery/buyer/<buyer_id>', methods=['GET'])
-def list_deliveries(buyer_id):
+def list_deliveries_buyer_id(buyer_id):
     response = controller.list_deliveries_buyer(buyer_id)
     return response.to_response()
 
 @delivery_bp.route('/delivery/buyer/status', methods=['GET'])
-def list_deliveries():
+def list_deliveries_buyer_status():
     status_id = request.args.get('status_id')
     buyer_id = request.args.get('buyer_id')
     response = controller.list_deliveries_buyer_status(buyer_id,status_id)
     return response.to_response()
 
 @delivery_bp.route('/delivery/seller/<seller_id>', methods=['GET'])
-def list_deliveries(seller_id):
+def list_deliveries_seller_id(seller_id):
     response = controller.list_deliveries_seller(seller_id)
     return response.to_response()
 
 @delivery_bp.route('/delivery/seller/status', methods=['GET'])
-def list_deliveries():
+def list_deliveries_by_seller_status():
     seller_id = request.args.get('seller_id')
     buyer_id = request.args.get('buyer_id')
     response = controller.list_deliveries_seller_status(buyer_id,seller_id)

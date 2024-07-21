@@ -22,7 +22,7 @@ def get_commentaries(uuid):
     return response.to_response()
 
 @commentaries_bp.route('/commentaries/seller/<seller_id>', methods=['GET'])
-def get_commentaries(seller_id):
+def get_commentaries_by_seller(seller_id):
     response = controller.get_commentaries_by_seller(seller_id)
     return response.to_response()
 
