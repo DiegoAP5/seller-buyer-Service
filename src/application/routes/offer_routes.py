@@ -30,3 +30,23 @@ def delete_offer(uuid):
 def list_offers():
     response = controller.list_offers()
     return response.to_response()
+
+@offer_bp.route('/offer/seller/<seller_id>', methods=['GET'])
+def list_offers_by_seller(seller_id):
+    response = controller.list_offers_by_seller(seller_id)
+    return response.to_response()
+
+@offer_bp.route('/offer/buyer/<buyer_id>', methods=['GET'])
+def list_offers_by_buyer(buyer_id):
+    response = controller.list_offers_by_buyer(buyer_id)
+    return response.to_response()
+
+@offer_bp.route('/offer/seller/<seller_id>/status/<status_id>', methods=['GET'])
+def list_offers_by_seller_and_status(seller_id, status_id):
+    response = controller.list_offers_by_seller_and_status(seller_id, status_id)
+    return response.to_response()
+
+@offer_bp.route('/offer/buyer/<buyer_id>/status/<status_id>', methods=['GET'])
+def list_offers_by_buyer_and_status(buyer_id, status_id):
+    response = controller.list_offers_by_buyer_and_status(buyer_id, status_id)
+    return response.to_response()

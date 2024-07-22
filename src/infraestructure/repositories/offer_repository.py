@@ -23,3 +23,15 @@ class OfferRepository:
         if status:
             self.session.delete(status)
             self.session.commit()
+
+    def get_offer_by_seller(self, seller_id):
+        return self.session.query(Offer).filter(Offer.sellerId==seller_id).all()
+    
+    def get_offer_by_buyer(self, buyer_id):
+        return self.session.query(Offer).filter(Offer.buyerId==buyer_id).all()
+    
+    def get_offer_by_seller_and_status(self, seller_id, status_id):
+        return self.session.query(Offer).filter(Offer.sellerId==seller_id, Offer.status == status_id).all()
+    
+    def get_offer_by_buyer_and_status(self, buyer_id, status_id):
+        return self.session.query(Offer).filter(Offer.buyerId==buyer_id, Offer.status == status_id).all()
