@@ -5,6 +5,18 @@ from infraestructure.db import SessionLocal
 from application.schemas.offer_schema import OfferSchema
 from application.schemas.base_response import BaseResponse
 from http import HTTPStatus
+import pika
+
+def get_rabbitmq_connection():
+        connection = pika.BlockingConnection(pika.ConnectionParameters('http://35.168.45.250:15672/'))
+        return connection
+
+def send_message_to_queue(queue_name, message):
+    connection = get_rabbitmq_connection()
+    channel = connection.channel()
+    channel.queue_declare(queue=queue_name)
+    channel.basic_publish(exchange='', routing_key=queue_name, body=message)
+    connection.close()
 
 class OfferController:
     def __init__(self):
@@ -29,6 +41,11 @@ class OfferController:
                 for key, value in validated_data.items():
                     setattr(offer, key, value)
                 self.repo.update(offer)
+                old_status_id = offer.statusId
+                new_status_id = data.get('statusId', offer.statusId)
+                if old_status_id != new_status_id and new_status_id == 2:
+                    message = offer.clothId
+                    send_message_to_queue('status_change_queue', message)
                 return BaseResponse(self.to_dict(offer), "Offer updated successfully", True, HTTPStatus.OK)
             except ValidationError as err:
                 return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
