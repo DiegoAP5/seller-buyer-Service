@@ -10,7 +10,7 @@ class OfferRepository:
         self.session.commit()
     
     def get_by_uuid(self, uuid: str) -> Offer:
-        return self.session.query(Offer).filter_by(uuid=uuid).first()
+        return self.session.query(Offer).filter_by(id=uuid).first()
     
     def get_all(self):
         return self.session.query(Offer).all()
