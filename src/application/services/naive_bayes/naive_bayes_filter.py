@@ -40,7 +40,7 @@ class NaiveBayesFilter:
         return prediction[0] == 1
 
 clean_comments = ["Esta muy bueno", "Esta con madres", "Compren", "Esa bien", "Esta bien verga", "Me quedó al pedo", "Me gusta mucho el producto", "Me gusta", "Bueno", "Muy bueno", "Excelente", "Increiblemente bueno", "Increible"]
-offensive_comments = ["Puto", "Pendejo", "Desgraciado", "Mampo", "Esta de la verga", "Pendejos", "Mampos", "Mampito","chinga tu madre","verga","vergas","tonalteco"]
+offensive_comments = ["Puto", "Pendejo", "Desgraciado", "Mampo", "Esta de la verga", "Pendejos", "Mampos", "Mampito","chinga tu madre","verga","vergas","tonalteco","mamp0"]
 
 filter = NaiveBayesFilter()
 filter.train(clean_comments, offensive_comments)

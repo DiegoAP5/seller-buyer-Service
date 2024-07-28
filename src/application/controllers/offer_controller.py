@@ -52,19 +52,19 @@ class OfferController:
         return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
 
     def list_offers_by_seller(self, seller_id):
-        offers = self.repo.get_all_by_seller_id(seller_id)
+        offers = self.repo.get_offer_by_seller(seller_id)
         return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
     
     def list_offers_by_buyer(self, buyer_id):
-        offers = self.repo.get_all_by_buyer_id(buyer_id)
+        offers = self.repo.get_offer_by_buyer(buyer_id)
         return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
 
     def list_offers_by_seller_and_status(self, seller_id, status_id):
-        offers = self.repo.get_all_by_seller_id_and_status(seller_id, status_id)
+        offers = self.repo.get_offer_by_seller_and_status(seller_id, status_id)
         return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
     
     def list_offers_by_buyer_and_status(self, buyer_id, status_id):
-        offers = self.repo.get_all_by_buyer_id_and_status(buyer_id, status_id)
+        offers = self.repo.get_offer_by_buyer_and_status(buyer_id, status_id)
         return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
     
     def to_dict(self, offer: Offer):
