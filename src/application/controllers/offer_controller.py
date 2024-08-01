@@ -6,6 +6,7 @@ from application.services.rabbit import RabbitClient
 from application.schemas.offer_schema import OfferSchema
 from application.schemas.base_response import BaseResponse
 from http import HTTPStatus
+from application.controllers.delivery_controller import DeliveryController
 import pika
 import json
 from infraestructure.db import SessionLocalUser
@@ -43,6 +44,7 @@ class OfferController:
         self.session_user = SessionLocalUser()
         self.repo = OfferRepository(self.session, self.session_user)
         self.schema = OfferSchema()
+        self.delivery_controller = DeliveryController() 
 
     def create_offer(self, data):
         try:
@@ -63,8 +65,21 @@ class OfferController:
                 self.repo.update(offer)
                 new_status_id = data.get('statusId', offer.statusId)
                 if new_status_id == 2:
+                    user = self.repo.get_user_by_id(offer.sellerId)
                     message = {'ropa_id': offer.clothId}
                     send_message_to_queue('status_update_queue', message)
+                    delivery_data = {
+                        'clothId': offer.clothId,
+                        'buyerId': offer.buyerId,
+                        'sellerId': offer.sellerId,
+                        'offerId': offer.id,
+                        'date': '2024-07-31',
+                        'statusId': 1,
+                        'location': 'Parque central',
+                        'cellphone': user.cellphone,
+                        'comments': 'Entrega a tiempo',
+                    }
+                    self.delivery_controller.create_delivery(delivery_data)
                 return BaseResponse(self.to_dict(offer), "Offer updated successfully", True, HTTPStatus.OK)
             except ValidationError as err:
                 return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
