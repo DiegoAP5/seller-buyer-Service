@@ -2,26 +2,46 @@ from marshmallow import ValidationError
 from domain.models.offer import Offer
 from infraestructure.repositories.offer_repository import OfferRepository
 from infraestructure.db import SessionLocal
+from application.services.rabbit import RabbitClient
 from application.schemas.offer_schema import OfferSchema
 from application.schemas.base_response import BaseResponse
 from http import HTTPStatus
 import pika
+import json
+from infraestructure.db import SessionLocalUser
 
 def get_rabbitmq_connection():
-        connection = pika.BlockingConnection(pika.ConnectionParameters('http://35.168.45.250:15672/'))
+        credentials = pika.PlainCredentials('diego', 'Diegoespro01')
+        parameters = pika.ConnectionParameters(
+            host='35.168.45.250', 
+            port=5672, 
+            virtual_host='/', 
+            credentials=credentials
+        )
+        connection = pika.BlockingConnection(parameters)
         return connection
 
 def send_message_to_queue(queue_name, message):
     connection = get_rabbitmq_connection()
     channel = connection.channel()
     channel.queue_declare(queue=queue_name)
-    channel.basic_publish(exchange='', routing_key=queue_name, body=message)
+    channel.basic_publish(exchange='', routing_key=queue_name, body=json.dumps(message))
     connection.close()
+    
+    
+def get_cloth_data(cloth_id):
+    rabbit_client = RabbitClient()
+    message = {"cloth_id": cloth_id}
+    response = rabbit_client.call('cloth_request_queue', message)
+    rabbit_client.close()
+    return response
 
 class OfferController:
     def __init__(self):
         self.session = SessionLocal()
-        self.repo = OfferRepository(self.session)
+        self.rabbit = RabbitClient()
+        self.session_user = SessionLocalUser()
+        self.repo = OfferRepository(self.session, self.session_user)
         self.schema = OfferSchema()
 
     def create_offer(self, data):
@@ -41,11 +61,10 @@ class OfferController:
                 for key, value in validated_data.items():
                     setattr(offer, key, value)
                 self.repo.update(offer)
-                old_status_id = offer.statusId
                 new_status_id = data.get('statusId', offer.statusId)
-                if old_status_id != new_status_id and new_status_id == 2:
-                    message = offer.clothId
-                    send_message_to_queue('status_change_queue', message)
+                if new_status_id == 2:
+                    message = {'ropa_id': offer.clothId}
+                    send_message_to_queue('status_update_queue', message)
                 return BaseResponse(self.to_dict(offer), "Offer updated successfully", True, HTTPStatus.OK)
             except ValidationError as err:
                 return BaseResponse(None, err.messages, False, HTTPStatus.BAD_REQUEST)
@@ -70,19 +89,80 @@ class OfferController:
 
     def list_offers_by_seller(self, seller_id):
         offers = self.repo.get_offer_by_seller(seller_id)
-        return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
+        offers_data = []
+        for offer in offers:
+            user_id = offer.buyerId
+            user = self.repo.get_user_by_id(user_id)
+            cloth_data = get_cloth_data(offer.clothId)
+            offers_data.append({
+                "offer": self.to_dict(offer),
+                "cloth": cloth_data,
+                'user': {
+                            'id': user.id,
+                            'name': user.name,
+                            'email': user.email,
+                            'cellphone': user.cellphone
+                        }
+            })
+        return BaseResponse(offers_data, "Offers fetched successfully", True, HTTPStatus.OK)
     
     def list_offers_by_buyer(self, buyer_id):
+        print(buyer_id)
         offers = self.repo.get_offer_by_buyer(buyer_id)
-        return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
+        offers_data = []
+        for offer in offers:
+            user_id = offer.sellerId
+            user = self.repo.get_user_by_id(user_id)
+            cloth_data = get_cloth_data(offer.clothId)
+            offers_data.append({
+                "offer": self.to_dict(offer),
+                "cloth": cloth_data,
+                'user': {
+                            'id': user.id,
+                            'name': user.name,
+                            'email': user.email,
+                            'cellphone': user.cellphone
+                        }
+            })
+        return BaseResponse(offers_data, "Offers fetched successfully", True, HTTPStatus.OK)
 
     def list_offers_by_seller_and_status(self, seller_id, status_id):
         offers = self.repo.get_offer_by_seller_and_status(seller_id, status_id)
-        return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
+        offers_data = []
+        for offer in offers:
+            user_id = offer.buyerId
+            user = self.repo.get_user_by_id(user_id)
+            cloth_data = get_cloth_data(offer.clothId)
+            offers_data.append({
+                "offer": self.to_dict(offer),
+                "cloth": cloth_data,
+                'user': {
+                            'id': user.id,
+                            'name': user.name,
+                            'email': user.email,
+                            'cellphone': user.cellphone
+                        }
+            })
+        return BaseResponse(offers_data, "Offers fetched successfully", True, HTTPStatus.OK)
     
     def list_offers_by_buyer_and_status(self, buyer_id, status_id):
         offers = self.repo.get_offer_by_buyer_and_status(buyer_id, status_id)
-        return BaseResponse([self.to_dict(offer) for offer in offers], "Offers fetched successfully", True, HTTPStatus.OK)
+        offers_data = []
+        for offer in offers:
+            user_id = offer.sellerId
+            user = self.repo.get_user_by_id(user_id)
+            cloth_data = get_cloth_data(offer.clothId)
+            offers_data.append({
+                "offer": self.to_dict(offer),
+                "cloth": cloth_data,
+                'user': {
+                            'id': user.id,
+                            'name': user.name,
+                            'email': user.email,
+                            'cellphone': user.cellphone
+                        }
+            })
+        return BaseResponse(offers_data, "Offers fetched successfully", True, HTTPStatus.OK)
     
     def to_dict(self, offer: Offer):
         return {
